@@ -1,0 +1,753 @@
+Imortant Rember Notes:
+
+Command Prompt (Cmd) to get the RDP port number: reg query "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v PortNumber
+pods: group of containers
+cluster: group of nodes
+infrastructure: resources used to run our application on cloud
+
+
+Jenkins password path                                                 : cat /var/lib/jenkins/secrets/initialAdminPassword
+command to select running java on system and change it                : update-alternatives --config java
+Jenkins file path where we can chnage port                            : vi /usr/lib/systemd/system/jenkins.service
+Jenkins by default for archive files                                  : /var/lib/jenkins/workspace/
+to create tomcat user login                                           : vi /root/apache-tomcat-9.0.91/conf/tomcat-users.xml
+to delete ipconfig for default access to tomcat server                : vi /root/apache-tomcat-9.0.91/webapps/manager/META-INF/context.xml
+to start tomcat                                                       : sh /root/apache-tomcat-9.0.91/bin/startup.sh
+to set hostname										                  : hostnamectl set-hostname <hostname>
+to set root passowrd                                                  : passwd root
+to change properties for login root user			                  : vi /etc/ssh/sshd_config
+to restart sshd (service)                                             : systemctl restart sshd
+path of inventory file for ansible                                    : /etc/ansible/hosts
+to get private ip of your server                                      : hostname -i
+command to generate key                                               : ssh-keygen   
+to copy key from one node to another node                             : ssh-copy-id root@private ip of worker node                   
+command to list all the users on server                               : cat /etc/passwd
+command to list all the group on server                               : cat /etc/group
+to list all the host added to ansible server                          : ansible all --list-hosts or cat .ssh/known_hosts
+to list server from 0 to 3 particular host(dev)                       : ansible dev[0:3] --list-hosts
+to list out particular host(dev)                                      : ansible dev[0] --list-hosts
+to list out last host addedto ansible server                          : ansible all[-1] --list-hosts
+command to print info about ansible worker node                       : ansible all -m setup or ansible all -m setup | grep -i cpu
+command to run playbook                                               : ansible-playbook playbookname.yaml
+copy file(abc.txt) at same path with different name of file(abc2.txt) : cp abc.txt ./abc2.txt
+to delete all the lines or text in file 							  : after opening a file, type “gg” then dG
+command to replace particular word in file                            : sed -i 's/present/absent/g' playbook.yaml  
+command to replace multiple words in file                             : sed -i 's/present/absent/g; s/started/stoped/g' playbook.yaml               
+to create vault                                                       : ansible-vault create abc.txt
+to edit vault                                                         : ansible-vault edit abc.txt
+to change password for vault                                          : ansible-vault rekey abc.txt
+to decrypt the content                                                : ansible-vault decrypt abc.txt
+to encrypt the content                                                : ansible-vault encrypt abc.txt
+to run encrypted playbook without decrypting and giving password      : ansible-playbook playbook.yaml --extra-vars "c=tree" --ask-vault-pass
+to view the content                                                   : ansible-vault view abc.txt
+dry-run                                                               : ansible-playbook playbook.yaml --check
+
+docker:
+method1 to create volume form Dockerfile                              : FROM ubuntu
+																	    RUN ["/volume01"]
+command to create volume                                              : docker volume create  volume01
+method1 to attach existing volume with new container from cli         : docker run -it --name cont02 --volumes-from cont01 --privileged=true ubuntu
+method2 to create new container with volume from cli                  : docker run -it --name cont02 -v /volume02 ubuntu
+method3 - mounting volume which already exists                        : docker run -it --name cont04 --mount source=volume01,destination=/vol01 ubuntu
+method4 create local folder as volume while creating container        : docker run -it --name cont06 -v /root/:/vol2/ ubuntu
+command to go inside the container                                    : docker attach container-name
+commadn to create image from existing container                       : docker commit cont01 test_image
+command to attach a volume named `vol01` to a container named `cont01`: 
+command to copy files from local to volume                            : docker cp /root/main.txt cont08:/vol02/
+command to delete volume                                              : docker volume rm
+mount path for created voulme                                         : "Mountpoint": "/var/lib/docker/volumes/volume01/_data
+command to show docker componenets resource utilization               : docker system df
+command to show docker componenets resource utilization inidividually : docker system df -v
+command to remove unused docker componenets (ex:cache)                : docker system prune
+command to list all the service running inside the conatiner          : docker top conatiner-name ex: docker top cont01
+command to install jenkins using jenkins/jenkins:lts image            :docker run -it --name cont01 -p 8080:8080 jenkins/jenkins:lts
+command to run all services                                           : docker-compose up -d
+command to remove all services                                        : docker-compose down
+command to stop all services                                          : docker-compose stop
+command to start all services                                         : docker-compose start
+command to pause all services                                         : docker-compose pause
+command to unpause all services                                       : docker-compose unpause
+to get all images managed by compose file                             : docker-compose images
+to get all containers managed by compose file                         : docker-compose ps -a
+to get all logs managed by compose file                               : docker-compose logs
+to kill all services                                                  : docker-compose kill
+to create 10 containers of containername                              : docker-compose scale containername=10
+to remove all services which is on stopped satate                     : docker-compose rm containername 
+to get all process managed by contaiber on compose file               : docker-compose top
+command to create container on port                                   : docker run -itd --name cont01 -p 81:80 movies:v1 
+command to create services                                            : docker service create --name movies --replicas=3 --publish 81:80 devopsmani007/movies:latest
+command to list all container for services                            : docker service ls
+command  to check cintainer for particular service                    : docker service ps movies
+command to get all info about particular service                      : docker service inspect  movies
+command to scale service                                              : docker service scale movies=5
+command to rollback                                                   : docker service rollback cont01
+command to remove service                                             : docker service rm movies
+command to make worker node down************                          : docker swarm leave
+command to delete worker node form cluster permanently                : docker node rm id(worker node id)
+join command including the join token for worker nodes                : docker swarm join-token worker ( run the following command on a manager node)
+join command including the join token for manager nodes               : docker swarm join-token manager ( run the following command on a manager node)
+
+command to create network                                             : docker network create network_name
+command to rm network                                                 : docker network rm network_name
+command to list network                                               : docker network ls
+command to get all info about particular network                      : docker inspect network network_name
+command to connect a container to the network                         : docker network connect network_name container_id/name
+command to disconnect conatiner form network                          : docker network disconnect network_name container_name/id
+command to purne network                                              : docker network purne
+command to install ping on ubuntu                                     : apt install iputils-ping -y
+command to check memeory usage by all conatiners                      : docker stats
+command to check memeory usage by particular conatiners               : docker stats container-name
+command to see the process inside the container                       : docker top container_id/name
+ 
+Imeperative method to create pod                                      : kubectl run pod-name --image devopsmani007/movies:latest
+command to list pod                                                   : kubectl get pods/pod/po
+comamnd to list pod with additional information                       : kubectl get pods -o wide                                            
+command to describe pod                                               : kubectl describe pod pod_name
+command to delete pod                                                 : kubectl delete pod pod_name
+command to go inside the pod                                          : kubectl exec -n <name space here> <pod-name>  -it -- /bin/sh
+
+command to get replicat-set                                           : kubectl get rs
+command to get replicat-set with other details                        : kubectl get rs -o wide
+command to describe replicat-set                                      : kubectl describe rs train-rs
+command to delete replicat-set                                        : kubectl delete rs tarin-rs
+command to edit replica-set                                           : kubectl edit rs train-rs
+command to delete pod which is having label app=train                 : kubectl delete pod -l app=train
+command to delete all pod                                             : kubectl delete pod --all
+command to scale replica-set                                          : kubectl scale rs/train-rs --replicas=10
+
+command to get deployment                                             : kubectl get deploy
+command to get deployment with other details                          : kubectl get deploy -o wide
+command to describe deployment                                        : kubectl describe deploy train-rs
+command to delete deployment                                          : kubectl delete deploy tarin-rs
+command to edit deployment                                            : kubectl edit deploy/train-rs
+command to delete pod releted to train app                            : kubectl delete pod -l app=train
+command to delete all pod                                             : kubectl delete pod --all
+command to scale deployment                                           : kubectl scale deploy/train-rs --replicas=10
+
+command to check pod logs                                             : kubectl logs pod-name
+command to check container level logs                                 : kubectl logs pod-name -c conatiner-name
+command to list all the pods in kube-system namse-space               : kubectl get pod -n kube-system
+command to list all the pods in default namse-space                   : kubectl get pod -n default
+command to list all the pods in kube-public namse-space               : kubectl get pod -n kube-public
+command to list all the pods in all namse-space                       : kubectl get pod -A
+command to see cluster                                                 : kubectl get cluster
+command to see cluster                                                 : kubectl delete cluster --name mani01.k8s.local --yes
+command to create namse-space                                         : kubectl create ns dev
+command to switch from current namespace to another namspace          : kubectl config set-context --current --namespace=dev
+command to check current name-space                                   : kubectl config view or kubectl config view | grep namespace
+List Available Contexts                                               : kubectl config get-contexts
+Switch to a Different Context or another cluster                      : kubectl config use-context mani01.k8s.local
+
+
+
+
+
+in Kubernetes to list all the API resources available in the cluste, including their short names, API groups, and whether they are namespaced or not                                                                   : kubect api-resources  
+--------------------------------------------------------
+Troubleshoot: when cluster is there but not visible  through command kops get cluster
+Check KOPS_STATE_STORE: Ensure that the `KOPS_STATE_STORE environment variable is set correctly. This variable should point to the location where your cluster state is stored. You can check it by running:
+
+Verify
+
+echo $KOPS_STATE_STORE
+If it is not set or incorrect, you can set it using:
+
+
+Verify
+
+
+export KOPS_STATE_STORE=s3://your-bucket-name
+---------------------------------------------------------
+ADMIN ACTIVITES: (ToScale Worker Node)
+kops edit ig --name=mani.k8s.local nodes-us-east-1a
+kops update cluster --name mani.k8s.local --yes --admin
+kops rolling-update cluster
+
+ADMIN ACTIVITES: (ToScale Master Node)
+kops edit ig --name=mani.k8s.local master-us-east-1a
+kops update cluster --name mani.k8s.local --yes --admin
+kops rolling-update cluster
+
+
+GIT:
+CVCS: Centralized Version Control System
+ex:- SVN(it can store code on a single repo)
+
+DVCS: Distributed Version Control System
+ex:- GIT(It can stored on multiple repo)
+
+
+
+ 
+Notes:
+kubectl get secret sftpaimspassword -o jsonpath='{.data}' | jq 'map_values(@base64d)'
+
+
+- Ansible is agent less. It means if we installed any software the on ansible server and it is having any dependency like (java,python), then on worker node we need not to install decendency seperately on worker node software will work independently.
+
+curl -L This command uses `curl` to download binary from the specified URL and the `-L` option instructs `curl` to follow any redirects, 
+	
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose` creates a symbolic link between the original location of the Docker Compose binary (`/usr/local/bin/docker-compose`) and a new location in the system's PATH (`/usr/bin/docker-compose`). 
+
+---------------------------------------------------Ansible ADHOC Commands-------------------------------------------------------
+Ansible adhoc commands:
+1. *service*: Manage system services.
+   bash
+   ansible all -m service -a "name=nginx state=started"
+   
+
+2. *yum*: Manage packages on Red Hat-based systems.
+   bash
+   ansible all -m yum -a "name=nginx state=present"
+   
+
+3. *apt*: Manage packages on Debian-based systems.
+   bash
+   ansible all -m apt -a "name=nginx state=present update_cache=yes"
+   
+
+4. *copy*: Copy files to remote hosts.
+   bash
+   ansible all -m copy -a "src=/local/path/index.html dest=/var/www/html/index.html"
+   
+
+5. *template*: Deploy configuration files using Jinja2 templates.
+   bash
+   ansible all -m template -a "src=/local/path/nginx.conf.j2 dest=/etc/nginx/nginx.conf"
+   
+
+6. *user*: Manage user accounts.
+   bash
+   ansible all -m user -a "name=john state=present groups=sudo"
+   
+
+7. *group*: Manage user groups.
+   bash
+   ansible all -m group -a "name=developers state=present"
+   
+
+8. *file*: Manage file and directory permissions, ownership, etc.
+   bash
+   ansible all -m file -a "path=/data state=directory mode=0755"
+   
+
+9. *shell*: Execute shell commands on remote hosts.
+   bash
+   ansible all -m shell -a "echo 'Hello, World!' > /tmp/hello.txt"
+   
+
+10. *command*: Run commands on remote hosts.
+    bash
+    ansible all -m command -a "mkdir /mydir"
+    
+
+11. *get_url*: Download files from URLs.
+    bash
+    ansible all -m get_url -a "url=http://example.com/file.tar.gz dest=/tmp/file.tar.gz"
+    
+
+12. *fetch*: Fetch files from remote hosts to the local machine.
+    bash
+    ansible all -m fetch -a "src=/var/log/nginx/access.log dest=/local/path/access.log flat=yes"
+    
+
+13. *cron*: Manage cron jobs.
+    bash
+    ansible all -m cron -a "name='Daily Backup' minute=0 hour=2 job='/usr/local/bin/backup.sh'"
+    
+
+14. *debug*: Print debug messages.
+    bash
+    ansible all -m debug -a "msg='This is a debug message.'"
+    
+
+15. *git*: Manage Git repositories.
+    bash
+    ansible all -m git -a "repo=https://github.com/example/repo.git dest=/path/to/repo"
+	tried:(I have tried below command to check functionality)
+	ansible dev[0] -m git -a "repo=https://github.com/prashantm098/Deveops.git dest=/root/repo"
+    
+
+16. *lineinfile*: Ensure a specific line is in a file.
+    bash
+    ansible all -m lineinfile -a "path=/etc/hosts line='127.0.0.1 example.com'"
+    
+
+17. *set_fact*: Set variables dynamically.
+    bash
+    ansible all -m set_fact -a "my_custom_var='Custom Value'"
+    
+
+18. *systemd*: Manage systemd services.
+    bash
+    ansible all -m systemd -a "name=nginx state=started enabled=yes"
+    
+----------------------------------------------xxxxxxxxxxxxxxxxxxxx---------------------------------------------
+
+
+
+---------------------------------------------------Ansible modules along playbook-----------------------------------------------------
+
+Ansible modules along playbook
+
+1. *service*: Manages system services.
+   yaml
+   - name: Ensure nginx is running
+     service:
+       name: nginx
+       state: started
+   
+
+2. *yum*: Manages packages on Red Hat-based systems.
+   yaml
+   - name: Install latest version of nginx
+     yum:
+       name: nginx
+       state: latest
+   
+
+3. *apt*: Manages packages on Debian-based systems.
+   yaml
+   - name: Install nginx
+     apt:
+       name: nginx
+       state: present
+       update_cache: yes
+   
+
+4. *copy*: Copies files to remote hosts.
+   yaml
+   - name: Copy index.html to web server
+     copy:
+       src: /local/path/index.html
+       dest: /var/www/html/index.html
+   
+
+5. *template*: Deploys configuration files using Jinja2 templates.
+   yaml
+   - name: Deploy nginx configuration from template
+     template:
+       src: /local/path/nginx.conf.j2
+       dest: /etc/nginx/nginx.conf
+   
+
+6. *user*: Manages user accounts.
+   yaml
+   - name: Create a new user
+     user:
+       name: john
+       state: present
+       groups: sudo
+   
+
+7. *group*: Manages user groups.
+   yaml
+   - name: Create a group
+     group:
+       name: developers
+       state: present
+   
+
+8. *file*: Manages file and directory permissions, ownership, etc.
+   yaml
+   - name: Ensure a directory exists
+     file:
+       path: /data
+       state: directory
+       mode: '0755'
+   
+
+9. *shell*: Executes shell commands on remote hosts.
+   yaml
+   - name: Run a shell command
+     shell: echo "Hello, World!" > /tmp/hello.txt
+   
+
+10. *command*: Runs commands on remote hosts.
+    yaml
+    - name: Create a new directory
+      command: mkdir /mydir
+    
+
+11. *get_url*: Downloads files from the internet.
+    yaml
+    - name: Download a file
+      get_url:
+        url: http://example.com/file.tar.gz
+        dest: /tmp/file.tar.gz
+    
+
+12. *fetch*: Fetches files from remote hosts to the local machine.
+    yaml
+    - name: Fetch log files
+      fetch:
+        src: /var/log/nginx/access.log
+        dest: /local/path/access.log
+        flat: yes
+    
+
+13. *cron*: Manages cron jobs.
+    yaml
+    - name: Add a cron job
+      cron:
+        name: "Daily Backup"
+        minute: "0"
+        hour: "2"
+        job: "/usr/local/bin/backup.sh"
+    
+
+14. *debug*: Prints debug messages.
+    yaml
+    - name: Print a debug message
+      debug:
+        msg: "This is a debug message."
+    
+
+15. *git*: Manages Git repositories.
+    yaml
+    - name: Clone a Git repository
+      git:
+        repo: 'https://github.com/example/repo.git'
+        dest: /path/to/repo
+    
+
+16. *lineinfile*: Ensures a specific line is in a file.
+    yaml
+    - name: Ensure a line in /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "127.0.0.1 example.com"
+    
+
+17. *set_fact*: Sets variables dynamically.
+    yaml
+    - name: Set a custom fact
+      set_fact:
+        my_custom_var: "Custom Value"
+    
+
+18. *systemd*: Manages systemd services.
+    yaml
+    - name: Start and enable nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+
+
+
+-------------------------------------------------playbook example---------------------------------------------
+playbook to install httpd and get version printed
+---
+- hosts: all
+  tasks:
+    - name: install httpd
+      yum: name=httpd state=present
+
+    - name: start httpd
+      service: name=httpd state=started
+
+    - name: create user
+      user: name=mani state=present
+
+    - name: check httpd version
+      shell: httpd -v
+      register: httpd_version
+
+    - name: show httpd version
+      debug:
+        var: httpd_version.stdout
+...
+
+
+-------------------------example of dynamic variable in ansible----------------------------
+---
+- hosts: all
+  vars:
+    a: git
+    b: maven
+    c: httpd
+    d: tree
+    y: present
+  tasks:
+    - name: install {{a}}
+      yum: name={{a}} state={{y}}
+
+    - name: install {{b}}
+      yum: name={{b}} state={{y}}
+
+    - name: install {{c}}
+      yum: name={{c}} state={{y}}
+
+    - name: check httpd version
+      shell: httpd -v
+      register: httpd_version
+
+    - name: show{{c}} version
+      debug:
+        var: httpd_version.stdout
+
+    - name: install {{d}}
+      yum: name={{d}} state={{y}}
+...
+
+if we run >> ansible-playbook playbook.yaml --extra-vars "d=tree" it will install and give correct output
+
+if we run >> ansible-playbook playbook.yaml --extra-vars "d=tree, y=absent" in this command I am overridng the value of y from present to absent so now it it will unistall .
+
+------------------------------------------------xxxxxxxxxxxxxxxxxxxx---------------------------------------------
+
+
+-----------------------------------------------------Pipe Line to trigger another job from same pipeline--------------------------------------
+pipeline {
+    agent {
+        label "$workernode"
+    }
+    stages {
+        stage("checkout") {
+            steps {
+                git branch: "$branch", url: "$url"
+            }
+        }
+        stage("trigger job Sample02") {
+            steps{
+                build job: 'Sample02'
+            }
+        }
+    }
+}
+----
+pipeline {
+    agent {
+        label "$workernode"
+    }
+    stages {
+        stage ("build") {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+    }
+    post {
+            success {
+                script {
+                    echo "build got success" 
+                    emailext attachLog: true, body: 'Build got success', subject: 'Build For DevOps', to:'maniprashant17@gmail.com'
+                }
+            }
+            failure {
+                script {
+                    echo "build got failed" 
+                    emailext attachLog: true, body: 'Build got success', subject: 'Build For DevOps', to:'maniprashant17@gmail.com'
+                }
+            }
+        }
+}
+
+
+-------------replicaset for minikube-------------
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: train-rs
+  labels:
+    app: train
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: train
+  template:
+    metadata:
+      labels:
+        app: train
+    spec:
+      containers:
+      - name: cont01
+        image: nginx
+---------------------------------------------------------------
+
+-------------------deployment.yaml for minikube--------------------
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: movies-rs
+  labels:
+    app: movies
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: movies
+  template:
+    metadata:
+      labels:
+        app: movies
+    spec:
+      containers:
+      - name: cont01
+        image: nginx
+-----------------------------------------------------		
+------------------------Creatinhg pod replicaset example-----------------------
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  labels:
+    app: train
+  name: train-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: train
+  template:
+    metadata:
+      labels:
+        app: train
+    spec:
+      containers:
+        - image: nginx
+          name: cont01
+		  
+------------------------Creatinhg pod deployment example-----------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: train
+  name: train-rs   (in this example we can change tarin-rs to another name but I have left it like that)
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: train
+  template:
+    metadata:
+      labels:
+        app: train
+    spec:
+      containers:
+        - image: nginx
+          name: cont01		  
+		  
+-------------------------------Kubernetes Service clusterIP Example----------------	  
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: train
+  name: train-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: train
+  template:
+    metadata:
+      labels:
+        app: train
+    spec:
+      containers:
+        - image: devopsmani007/train:latest
+          name: cont01
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: train
+spec:
+  type: ClusterIP
+  selector:
+    app: train
+  ports:
+    - port: 80
+
+  
+
+
+-------------------------------Kubernetes Service Nodeport Example----------------	  
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: train
+  name: train-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: train
+  template:
+    metadata:
+      labels:
+        app: train
+    spec:
+      containers:
+        - image: devopsmani007/train:latest
+          name: cont01
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: train
+spec:
+  type: NodePort
+  selector:
+    app: train
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30011
+
+
+
+
+
+-------------------------------Kubernetes Service LoadBalancer Example----------------	  
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: train
+  name: train-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: train
+  template:
+    metadata:
+      labels:
+        app: train
+    spec:
+      containers:
+        - image: devopsmani007/train:latest
+          name: cont01
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: train
+spec:
+  type: LoadBalancer
+  selector:
+    app: train
+  ports:
+    - port: 80
+      targetPort: 80
